@@ -1,0 +1,17 @@
+# Spring Configuration
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:your-key-here}
+      chat:
+        options:
+          model: gpt-4o
+
+# SpringClaw Configuration
+springclaw:
+  gateway:
+    port: 8080
+    web-channel-enabled: true
+  memory:
+    type: in-memory
+    max-messages: 50
