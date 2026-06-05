@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * Auto-configuration for the web channel adapter.
+ *
+ * <p>Registered with ChannelManager by GatewayAutoConfiguration.
+ * Enabled when springclaw.gateway.web-channel-enabled is true (default).
  */
 @AutoConfiguration
 @ConditionalOnProperty(prefix = "springclaw.gateway", name = "web-channel-enabled", havingValue = "true", matchIfMissing = true)

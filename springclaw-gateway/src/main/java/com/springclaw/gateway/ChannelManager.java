@@ -1,6 +1,5 @@
 package com.springclaw.gateway;
 
-import com.springclaw.channels.WebChannelAdapter;
 import com.springclaw.core.ChannelAdapter;
 import com.springclaw.core.ChannelConfig;
 import com.springclaw.core.InboundMessage;
@@ -18,7 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manages channel lifecycle and message routing.
  *
  * <p>Registers channels, starts/stops them, and routes inbound messages
- * to the appropriate agent via the AgentRegistry.
+ * to the appropriate agent via the AgentRegistry. Responses are delivered
+ * back through the originating channel.
  */
 public class ChannelManager {
 
@@ -44,6 +44,7 @@ public class ChannelManager {
      */
     public void registerChannel(ChannelAdapter adapter, ChannelConfig config) {
         channels.put(adapter.getId(), adapter);
+        adapter.initialize(config);
         log.info("Registered channel: {} ({})", adapter.getId(), adapter.getName());
     }
 
@@ -73,17 +74,17 @@ public class ChannelManager {
     }
 
     /**
-     * Handle an inbound message by routing it to the appropriate agent.
+     * Handle an inbound message by routing it to the appropriate agent
+     * and delivering the response back through the originating channel.
      */
     public Mono<String> handleInbound(InboundMessage message) {
         log.debug("Handling inbound message from channel '{}' for session '{}'",
                 message.channelId(), message.sessionId());
 
-        // Subscribe channel receivers
+        // Subscribe channel receivers (one-time per channel)
         subscribeChannelReceiver(message.channelId());
 
         // Route to agent
-        // Default: use the first available agent or the one specified in session metadata
         String agentId = resolveAgentId(message);
         var agent = agentRegistry.getAgentOrThrow(agentId);
 
@@ -95,9 +96,33 @@ public class ChannelManager {
                 sessionId, message.userId(), message.metadata()
         );
 
-        // Send prompt
+        // Send prompt and deliver response back through the channel
         var result = agent.prompt(message.content(), ctx);
-        return Mono.just(result.response());
+
+        // Deliver response through the originating channel
+        Mono<String> responseMono = Mono.just(result.response());
+
+        // Send the response back through the channel (non-blocking)
+        sendResponse(message, result.response());
+
+        return responseMono;
+    }
+
+    /**
+     * Send a response back through the originating channel.
+     * This is fire-and-forget — errors are logged but don't affect the response.
+     */
+    private void sendResponse(InboundMessage originalMessage, String response) {
+        ChannelAdapter adapter = channels.get(originalMessage.channelId());
+        if (adapter == null) {
+            log.warn("No channel adapter found for channel '{}', dropping response", originalMessage.channelId());
+            return;
+        }
+
+        adapter.send(originalMessage, response)
+                .doOnError(err -> log.error("Failed to send response through channel '{}': {}",
+                        originalMessage.channelId(), err.getMessage()))
+                .subscribe();
     }
 
     private void subscribeChannelReceiver(String channelId) {

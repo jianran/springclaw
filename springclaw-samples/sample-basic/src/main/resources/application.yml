@@ -39,3 +39,19 @@ springclaw:
   memory:
     type: in-memory
     max-messages: 50
+
+# Channel Adapters (disabled by default, enable with your tokens)
+# springclaw:
+#   channels:
+#     discord:
+#       enabled: true
+#       bot-token: ${DISCORD_BOT_TOKEN}
+#       allowed-users: []
+#       allowed-servers: []
+#     telegram:
+#       enabled: true
+#       mode: polling
+#       bot-token: ${TELEGRAM_BOT_TOKEN}
+#       bot-name: "MyClawBot"
+#       webhook-url: ""
+#       allowed-users: []

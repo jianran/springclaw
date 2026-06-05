@@ -214,9 +214,9 @@ public class MyTool implements ToolDefinition {
 | Channel | Status | Description |
 |---------|--------|-------------|
 | Web | Built-in | REST + WebSocket + chat widget |
+| Discord | Ready | Mention, prefix (`!ask`), and slash (`/ask`) commands |
+| Telegram | Ready | Long polling & webhook modes |
 | Slack | Planned | Slack bot with slash commands |
-| Telegram | Planned | Telegram bot with inline queries |
-| Discord | Planned | Discord bot with message commands |
 | Signal | Planned | Signal bot via libsignal |
 
 Extend with plugins:
@@ -264,6 +264,8 @@ springclaw/
 ├── springclaw-spring-boot/ # Spring Boot auto-configuration
 ├── springclaw-gateway/     # HTTP/WebSocket server
 ├── springclaw-channels/    # Channel adapters (Web)
+├── springclaw-channels-discord/ # Discord adapter (JDA)
+├── springclaw-channels-telegram/ # Telegram adapter (TelegramBots)
 ├── springclaw-tools/       # Built-in tools (search, fetch, file, cron)
 ├── springclaw-memory/      # ChatMemory backends
 └── springclaw-samples/     # Example applications
