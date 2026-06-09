@@ -1,0 +1,48 @@
+# Spring Configuration
+spring:
+  datasource:
+    url: jdbc:h2:mem:springclaw;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:your-key-here}
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.7
+
+# SpringClaw Configuration
+springclaw:
+  agents:
+    assistant:
+      name: "CLI Assistant"
+      description: "A helpful AI assistant optimized for CLI interaction"
+      system-prompt: |
+        You are a helpful AI assistant. Be concise and accurate.
+        If you need to search for current information, use the web_search tool.
+        If you need to read files, use the file_read tool.
+      model:
+        provider: openai
+        model-id: gpt-4o
+        temperature: 0.7
+      tools:
+        allow: ["web_search", "web_fetch", "file_read", "session"]
+        deny: []
+      memory:
+        type: in-memory
+        max-messages: 50
+  # Enable CLI (disable gateway to avoid port conflicts)
+  cli:
+    enabled: true
+    tui:
+      enabled: true
+      streaming: true
+      show-token-usage: true
+      show-tool-calls: true
+  gateway:
+    enabled: false
+  memory:
+    type: in-memory
+    max-messages: 50

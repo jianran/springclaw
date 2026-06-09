@@ -24,6 +24,49 @@
 └─────────────────────────────────────────────────────┘
 ```
 
+## CLI — Interactive & Scriptable Agent Interface
+
+SpringClaw includes a built-in CLI for interactive TUI chat and scriptable command-line usage:
+
+```bash
+# Interactive TUI (default)
+./gradlew :springclaw-samples:sample-cli:bootRun
+
+# One-shot prompt
+./gradlew :springclaw-samples:sample-cli:bootRun -- args send "What is AI?"
+
+# JSON output for scripting
+./gradlew :springclaw-samples:sample-cli:bootRun -- args send "Hello?" -f json
+
+# List agents
+./gradlew :springclaw-samples:sample-cli:bootRun -- args agents
+
+# List tools
+./gradlew :springclaw-samples:sample-cli:bootRun -- args tools
+
+# Remote mode (connect to running gateway)
+# Set springclaw.cli.mode=remote + springclaw.cli.gateway-url=http://localhost:8080
+./gradlew :springclaw-samples:sample-cli:bootRun -- args send "Hello?" --remote
+
+# CLI subcommands
+  chat               Start interactive TUI session
+  send <message>     Send a one-shot prompt
+  agents             List available agents
+  tools              List tools for current agent
+  session            Show or reset session info
+
+# CLI options
+  -a, --agent <id>       Specify agent ID
+  -f, --format <json|text>  Output format (default: text)
+  --remote               Use remote mode (connect to gateway)
+  --gateway-url <url>    Gateway URL for remote mode
+```
+
+### CLI Architecture
+The CLI supports two runtime modes:
+- **Local mode** (default): Agents run in-process via `AgentRegistry` — no gateway needed
+- **Remote mode**: Connects to a running gateway via HTTP/WebSocket using `WebClient`
+
 ## Quick Start
 
 ### 1. Add Dependencies
@@ -266,9 +309,10 @@ springclaw/
 ├── springclaw-channels/    # Channel adapters (Web)
 ├── springclaw-channels-discord/ # Discord adapter (JDA)
 ├── springclaw-channels-telegram/ # Telegram adapter (TelegramBots)
+├── springclaw-cli/         # CLI + TUI application (interactive & scriptable)
 ├── springclaw-tools/       # Built-in tools (search, fetch, file, cron)
 ├── springclaw-memory/      # ChatMemory backends
-└── springclaw-samples/     # Example applications
+└── springclaw-samples/     # Example applications (basic, multi-agent, cli)
 ```
 
 ## Contributing

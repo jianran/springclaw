@@ -1,0 +1,22 @@
+# SpringClaw CLI — Default Configuration
+#
+# This configuration is applied when the CLI module is active.
+# Override these values in your application.yml or via environment variables.
+
+springclaw:
+  cli:
+    # Runtime mode: local (in-process agent) or remote (gateway HTTP)
+    mode: local
+
+    # Gateway URL for remote mode
+    gateway-url: http://localhost:8080
+
+    # Default agent ID (optional, falls back to first available)
+    # default-agent: assistant
+
+    # TUI settings
+    tui:
+      enabled: true
+      streaming: true
+      show-token-usage: true
+      show-tool-calls: true
